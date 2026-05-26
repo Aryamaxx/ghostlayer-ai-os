@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Nav } from "@/components/ghost/Nav";
-import { Hero } from "@/components/ghost/Hero";
+import { AwakeningHero } from "@/components/ghost/AwakeningHero";
 import { Features } from "@/components/ghost/Features";
-import { Timelines } from "@/components/ghost/Timelines";
+import { ParallelFutures } from "@/components/ghost/ParallelFutures";
+import { GhostMemories } from "@/components/ghost/GhostMemories";
 import { Testimonials } from "@/components/ghost/Testimonials";
 import { Waitlist } from "@/components/ghost/Waitlist";
 import { Footer } from "@/components/ghost/Footer";
 import { Orb } from "@/components/ghost/Orb";
+import { MemoryField } from "@/components/ghost/MemoryField";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -15,10 +17,12 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <main className="relative min-h-screen text-foreground overflow-x-hidden">
+      <MemoryField />
       <Nav />
-      <Hero />
+      <AwakeningHero />
       <Features />
-      <Timelines />
+      <ParallelFutures />
+      <GhostMemories />
       <Testimonials />
       <Waitlist />
       <Footer />

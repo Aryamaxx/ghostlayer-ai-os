@@ -12,14 +12,14 @@ export function Nav() {
         <ul className="hidden md:flex items-center gap-7 text-sm text-muted-foreground">
           <li><a href="#memory" className="hover:text-foreground transition">Memory</a></li>
           <li><a href="#timelines" className="hover:text-foreground transition">Timelines</a></li>
-          <li><a href="#creator" className="hover:text-foreground transition">Creator</a></li>
-          <li><a href="#insights" className="hover:text-foreground transition">Insights</a></li>
+          <li><a href="#ghosts" className="hover:text-foreground transition">Ghosts</a></li>
+          <li><a href="#waitlist" className="hover:text-foreground transition">Layer</a></li>
         </ul>
         <a
           href="#waitlist"
           className="rounded-full bg-foreground text-background text-sm font-medium px-4 py-1.5 hover:opacity-90 transition"
         >
-          Join waitlist
+          Enter the layer
         </a>
       </nav>
     </header>
