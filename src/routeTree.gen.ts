@@ -9,12 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as GodmodeRouteImport } from './routes/godmode'
+import { Route as GhostadminRouteImport } from './routes/ghostadmin'
 import { Route as IndexRouteImport } from './routes/index'
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GodmodeRoute = GodmodeRouteImport.update({
   id: '/godmode',
   path: '/godmode',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GhostadminRoute = GhostadminRouteImport.update({
+  id: '/ghostadmin',
+  path: '/ghostadmin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -25,37 +37,59 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ghostadmin': typeof GhostadminRoute
   '/godmode': typeof GodmodeRoute
+  '/login': typeof LoginRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ghostadmin': typeof GhostadminRoute
   '/godmode': typeof GodmodeRoute
+  '/login': typeof LoginRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ghostadmin': typeof GhostadminRoute
   '/godmode': typeof GodmodeRoute
+  '/login': typeof LoginRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/godmode'
+  fullPaths: '/' | '/ghostadmin' | '/godmode' | '/login'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/godmode'
-  id: '__root__' | '/' | '/godmode'
+  to: '/' | '/ghostadmin' | '/godmode' | '/login'
+  id: '__root__' | '/' | '/ghostadmin' | '/godmode' | '/login'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GhostadminRoute: typeof GhostadminRoute
   GodmodeRoute: typeof GodmodeRoute
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/godmode': {
       id: '/godmode'
       path: '/godmode'
       fullPath: '/godmode'
       preLoaderRoute: typeof GodmodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ghostadmin': {
+      id: '/ghostadmin'
+      path: '/ghostadmin'
+      fullPath: '/ghostadmin'
+      preLoaderRoute: typeof GhostadminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -70,18 +104,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GhostadminRoute: GhostadminRoute,
   GodmodeRoute: GodmodeRoute,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
