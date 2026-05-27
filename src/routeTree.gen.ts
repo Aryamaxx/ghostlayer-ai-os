@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as GodmodeRouteImport } from './routes/godmode'
+import { Route as GhostadminRouteImport } from './routes/ghostadmin'
 import { Route as IndexRouteImport } from './routes/index'
 
 const LoginRoute = LoginRouteImport.update({
@@ -23,6 +24,11 @@ const GodmodeRoute = GodmodeRouteImport.update({
   path: '/godmode',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GhostadminRoute = GhostadminRouteImport.update({
+  id: '/ghostadmin',
+  path: '/ghostadmin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,30 +37,34 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ghostadmin': typeof GhostadminRoute
   '/godmode': typeof GodmodeRoute
   '/login': typeof LoginRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ghostadmin': typeof GhostadminRoute
   '/godmode': typeof GodmodeRoute
   '/login': typeof LoginRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ghostadmin': typeof GhostadminRoute
   '/godmode': typeof GodmodeRoute
   '/login': typeof LoginRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/godmode' | '/login'
+  fullPaths: '/' | '/ghostadmin' | '/godmode' | '/login'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/godmode' | '/login'
-  id: '__root__' | '/' | '/godmode' | '/login'
+  to: '/' | '/ghostadmin' | '/godmode' | '/login'
+  id: '__root__' | '/' | '/ghostadmin' | '/godmode' | '/login'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GhostadminRoute: typeof GhostadminRoute
   GodmodeRoute: typeof GodmodeRoute
   LoginRoute: typeof LoginRoute
 }
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GodmodeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ghostadmin': {
+      id: '/ghostadmin'
+      path: '/ghostadmin'
+      fullPath: '/ghostadmin'
+      preLoaderRoute: typeof GhostadminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GhostadminRoute: GhostadminRoute,
   GodmodeRoute: GodmodeRoute,
   LoginRoute: LoginRoute,
 }
