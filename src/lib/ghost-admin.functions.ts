@@ -134,10 +134,9 @@ export const founderUpdatePersonality = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertFounder(context.userId);
-    const patch: Record<string, unknown> = { ...data, updated_at: new Date().toISOString() };
     const { data: row } = await supabaseAdmin
       .from("ghost_personality")
-      .update(patch)
+      .update({ ...data, updated_at: new Date().toISOString() })
       .eq("id", 1)
       .select()
       .single();
