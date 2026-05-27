@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { ghostRespond } from "@/lib/ghost-ai.functions";
 
@@ -11,6 +11,60 @@ const PROMPTS = [
   "Say something you've never said out loud…",
 ];
 
+function GhostTypewriter({
+  text,
+  onComplete,
+  delay = 400,
+  speed = 70,
+}: {
+  text: string;
+  onComplete?: () => void;
+  delay?: number;
+  speed?: number;
+}) {
+  const [visibleCount, setVisibleCount] = useState(0);
+  const [started, setStarted] = useState(false);
+  const words = text.split(/\s+/);
+
+  useEffect(() => {
+    const startTimer = setTimeout(() => setStarted(true), delay);
+    return () => clearTimeout(startTimer);
+  }, [delay]);
+
+  useEffect(() => {
+    if (!started) return;
+    if (visibleCount >= words.length) {
+      onComplete?.();
+      return;
+    }
+    const jitter = Math.random() * 40 - 20;
+    const timer = setTimeout(() => {
+      setVisibleCount((c) => c + 1);
+    }, speed + jitter);
+    return () => clearTimeout(timer);
+  }, [started, visibleCount, words.length, speed, onComplete]);
+
+  const visibleWords = words.slice(0, visibleCount);
+  const isDone = visibleCount >= words.length;
+
+  return (
+    <span>
+      {visibleWords.map((word, i) => (
+        <span
+          key={i}
+          className="inline-block mr-[0.25em] animate-fade-in"
+          style={{ animationDuration: "180ms" }}
+        >
+          {word}
+        </span>
+      ))}
+      {!isDone && started && (
+        <span className="inline-block w-[2px] h-[1em] bg-[var(--neon)] animate-pulse-glow align-middle ml-0.5" />
+      )}
+    </span>
+  );
+}
+
 export function Terminal({
   onStateChange,
 }: {
@@ -19,6 +73,7 @@ export function Terminal({
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [typingIndex, setTypingIndex] = useState<number | null>(null);
   const placeholderRef = useRef(PROMPTS[Math.floor(Math.random() * PROMPTS.length)]);
   const respond = useServerFn(ghostRespond);
 
@@ -33,19 +88,27 @@ export function Terminal({
     onStateChange?.("thinking");
     try {
       const { reply } = await respond({ data: { messages: next } });
+      const assistantIndex = next.length;
       setMessages((m) => [...m, { role: "assistant", content: reply }]);
+      setTypingIndex(assistantIndex);
       onStateChange?.("speaking");
-      setTimeout(() => onStateChange?.("idle"), 2200);
     } catch (err) {
       console.error(err);
+      const assistantIndex = next.length;
       setMessages((m) => [
         ...m,
         { role: "assistant", content: "Signal lost. Try once more." },
       ]);
-      onStateChange?.("idle");
+      setTypingIndex(assistantIndex);
+      onStateChange?.("speaking");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleTypingComplete = () => {
+    setTypingIndex(null);
+    onStateChange?.("idle");
   };
 
   return (
@@ -64,7 +127,19 @@ export function Terminal({
               {m.role === "user" ? (
                 <span><span className="text-[var(--neon)]/80">you ›</span> {m.content}</span>
               ) : (
-                <span><span className="text-[var(--violet)] font-mono text-xs mr-2">GHOST</span>{m.content}</span>
+                <span>
+                  <span className="text-[var(--violet)] font-mono text-xs mr-2">GHOST</span>
+                  {i === typingIndex ? (
+                    <GhostTypewriter
+                      text={m.content}
+                      onComplete={handleTypingComplete}
+                      delay={500}
+                      speed={80}
+                    />
+                  ) : (
+                    m.content
+                  )}
+                </span>
               )}
             </div>
           ))}
@@ -81,7 +156,7 @@ export function Terminal({
       <form
         onSubmit={submit}
         onFocus={() => onStateChange?.("listening")}
-        onBlur={() => !loading && onStateChange?.("idle")}
+        onBlur={() => !loading && typingIndex === null && onStateChange?.("idle")}
         className="glass rounded-2xl flex items-center gap-2 px-4 py-3 glow-ring"
       >
         <span className="text-[var(--neon)] font-mono text-sm">›</span>
