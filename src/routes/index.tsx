@@ -9,6 +9,7 @@ import { Waitlist } from "@/components/ghost/Waitlist";
 import { Footer } from "@/components/ghost/Footer";
 import { Orb } from "@/components/ghost/Orb";
 import { MemoryField } from "@/components/ghost/MemoryField";
+import { BroadcastBanner } from "@/components/ghost/BroadcastBanner";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -19,6 +20,7 @@ function Index() {
     <main className="relative min-h-screen text-foreground overflow-x-hidden">
       <MemoryField />
       <Nav />
+      <BroadcastBanner />
       <AwakeningHero />
       <Features />
       <ParallelFutures />
