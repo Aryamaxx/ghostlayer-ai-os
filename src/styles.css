@@ -156,6 +156,10 @@
   0% { background-position: -200% 0 }
   100% { background-position: 200% 0 }
 }
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); filter: blur(2px); }
+  to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
 @keyframes rise-in {
   from { opacity: 0; transform: translateY(24px) }
   to { opacity: 1; transform: translateY(0) }
@@ -163,4 +167,10 @@
 @keyframes orb-orbit {
   from { transform: rotate(0deg) translateX(var(--r, 100px)) rotate(0deg) }
   to   { transform: rotate(360deg) translateX(var(--r, 100px)) rotate(-360deg) }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fade-in 180ms ease-out forwards;
+  }
 }
