@@ -14,13 +14,185 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ghost_broadcasts: {
+        Row: {
+          active: boolean
+          created_at: string
+          created_by: string | null
+          id: string
+          message: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          message: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          message?: string
+        }
+        Relationships: []
+      }
+      ghost_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ghost_memories: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          kind: string
+          last_referenced_at: string | null
+          user_id: string
+          weight: number
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          kind: string
+          last_referenced_at?: string | null
+          user_id: string
+          weight?: number
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          last_referenced_at?: string | null
+          user_id?: string
+          weight?: number
+        }
+        Relationships: []
+      }
+      ghost_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          emotion: string | null
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          emotion?: string | null
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          emotion?: string | null
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ghost_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "ghost_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ghost_personality: {
+        Row: {
+          bluntness: number
+          id: number
+          intensity: number
+          mystery: number
+          shadow_mode: boolean
+          system_prompt: string | null
+          updated_at: string
+          warmth: number
+        }
+        Insert: {
+          bluntness?: number
+          id?: number
+          intensity?: number
+          mystery?: number
+          shadow_mode?: boolean
+          system_prompt?: string | null
+          updated_at?: string
+          warmth?: number
+        }
+        Update: {
+          bluntness?: number
+          id?: number
+          intensity?: number
+          mystery?: number
+          shadow_mode?: boolean
+          system_prompt?: string | null
+          updated_at?: string
+          warmth?: number
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          last_seen_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id: string
+          last_seen_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          last_seen_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_founder: { Args: { _uid: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
