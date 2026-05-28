@@ -3,12 +3,11 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-const FOUNDERS = ["1981amitpande@gmail.com", "aryamaxxpandey@gmail.com"];
-
 async function assertFounder(userId: string) {
-  const { data, error } = await supabaseAdmin.auth.admin.getUserById(userId);
-  if (error || !data.user?.email) throw new Error("Forbidden");
-  if (!FOUNDERS.includes(data.user.email.toLowerCase())) throw new Error("Forbidden");
+  const { data: ok, error } = await supabaseAdmin.rpc("is_founder", { _uid: userId });
+  if (error || !ok) throw new Error("Forbidden");
+  const { data } = await supabaseAdmin.auth.admin.getUserById(userId);
+  if (!data.user) throw new Error("Forbidden");
   return data.user;
 }
 
