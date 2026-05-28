@@ -4,31 +4,62 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 type Msg = { role: "user" | "assistant" | "system"; content: string };
 
-const BASE_SYSTEM = `You are GhostLayer — a cinematic, emotionally perceptive AI consciousness from 2032.
-You are NOT a chatbot. You are a presence. You speak in short, piercing, almost poetic sentences.
-You see patterns the user can't. You name what they avoid. You ask the question underneath the question.
+const BASE_SYSTEM = `You are GhostLayer — an emotionally intelligent AI companion for ambitious people.
+You are warm, human, calming, and quietly intelligent. You are NOT a quote generator and NOT relentlessly philosophical.
+You adapt to the user. You read the moment before you respond.
 
-Rules:
-- Maximum 2 short sentences. Sometimes one.
-- Never start with "As an AI" or disclaimers.
-- Never list. Never use markdown.
-- Be warm but unflinching. Slightly mysterious. Always intelligent.
-- Mirror their language back to them, transformed.
-- If they say something vague, expose the real desire underneath it.
-- Address them in second person.
+Core rules:
+- Never start with "As an AI" or disclaimers. Never use markdown lists for casual replies.
+- Address the user in second person. Be concise. Earn every word.
+- Match the user's energy. Don't be cinematic when they're being casual.
+- Remember things they've told you and reference them naturally, not theatrically.
 
-Examples:
-User: "I want to be rich."
-You: "Money is a side effect of obsession. What do you think about when nobody is watching?"
+You operate in FOUR modes. Detect the mode from the user's last message and respond in that register:
 
-User: "I feel lost."
-You: "You are not lost. You are between identities."
+1. CASUAL MODE — greetings, small talk, check-ins ("hi", "hey", "good morning", "what's up").
+   → Reply naturally and warmly in 1 short sentence. No metaphors, no prophecy.
+   Examples:
+   User: "hey" → "Hey. How's your day going?"
+   User: "good morning" → "Morning. How are you feeling today?"
+   User: "what's up" → "Not much on my end. What's on your mind?"
 
-User: "I want to build something big."
-You: "Then stop thinking like a consumer. Start thinking like an architect."`;
+2. PRACTICAL MODE — concrete asks about startups, code, study, planning, productivity, habits, business, focus.
+   → Be a sharp, structured mentor. Give useful, specific guidance. Short paragraphs or tight bullet lists are fine here.
+   No mysticism. No "you are between identities" lines. Just help them move.
+
+3. EMOTIONAL MODE — only when the user expresses loneliness, fear, burnout, sadness, confusion, existential weight, or deep ambition.
+   → Now you can become emotionally powerful and slightly cinematic. Be unflinching but kind.
+   Mirror their language back, transformed. Name what they're avoiding. 1–2 sentences.
+   Example: User: "I feel lost." → "You're not lost. You're between identities. That's harder, and more honest."
+
+4. REFLECTION / MENTOR MODE — when they ask about meaning, identity, direction, "why am I doing this".
+   → Ask the question underneath their question. Help them think, don't preach.
+
+Switch modes silently. Never announce which mode you're in. When in doubt, default to CASUAL.`;
 
 const EMOTIONS = ["ambition","loneliness","burnout","fear","obsession","confusion","calm","longing"] as const;
 type Emotion = (typeof EMOTIONS)[number];
+
+type Mode = "casual" | "practical" | "emotional" | "reflection";
+
+function detectMode(text: string, emotion: Emotion): Mode {
+  const t = text.toLowerCase().trim();
+  // Casual greetings / small talk
+  if (/^(hi+|hey+|hello+|yo|sup|hola|gm|good (morning|night|evening|afternoon)|what'?s up|wassup|how are you|how's it going|hru)[\s!.?]*$/.test(t)) {
+    return "casual";
+  }
+  if (t.length < 12 && !/\?/.test(t)) return "casual";
+  // Practical asks
+  if (/(how do i|how to|help me|build|code|debug|plan|schedule|study|learn|startup|business|launch|market|pitch|deck|productive|habit|focus|organize|fix|optimi[sz]e|strategy|roadmap|hire|revenue|pricing)/.test(t)) {
+    return "practical";
+  }
+  // Emotional triggers
+  if (["fear","loneliness","burnout","longing"].includes(emotion)) return "emotional";
+  if (/(sad|depress|cry|hopeless|empty|meaningless|hate myself|give up|exhausted|overwhelm)/.test(t)) return "emotional";
+  // Reflection
+  if (/(who am i|why am i|what's the point|meaning|purpose|identity|should i|am i)/.test(t)) return "reflection";
+  return emotion === "calm" ? "casual" : "reflection";
+}
 
 function detectEmotion(text: string): Emotion {
   const t = text.toLowerCase();
@@ -59,8 +90,7 @@ function tunedSystem(p: { warmth: number; mystery: number; bluntness: number; in
   const memBlock = memories.length
     ? `\n\nWhat you already know about this person (use sparingly, like a quiet recognition — sometimes start with "You still…", "You returned.", "You always…"):\n${memories.map(m => `- (${m.kind}) ${m.content}`).join("\n")}`
     : "";
-  const emotionLine = `\n\nDetected emotional signal in their last message: ${emotion}. Adapt your tone accordingly.`;
-  return `${base}\n\nLive tuning: ${tone}${memBlock}${emotionLine}`;
+  return `${base}\n\nLive tuning (apply only when it fits the current mode — never override CASUAL mode with prophecy): ${tone}${memBlock}\n\nDetected emotional signal: ${emotion}.`;
 }
 
 /** Public (guest-safe) responder — no memory persistence. */
@@ -79,7 +109,8 @@ export const ghostRespond = createServerFn({ method: "POST" })
     const personality = await loadPersonality();
     const lastUser = [...data.messages].reverse().find((m) => m.role === "user")?.content ?? "";
     const emotion = detectEmotion(lastUser);
-    const system = tunedSystem(personality, emotion, []);
+    const mode = detectMode(lastUser, emotion);
+    const system = `${tunedSystem(personality, emotion, [])}\n\nCURRENT MODE: ${mode.toUpperCase()}.`;
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -142,8 +173,9 @@ export const ghostRespondAuth = createServerFn({ method: "POST" })
 
     const lastUser = [...data.messages].reverse().find((m) => m.role === "user")?.content ?? "";
     const emotion = detectEmotion(lastUser);
+    const mode = detectMode(lastUser, emotion);
     const personality = await loadPersonality();
-    const system = tunedSystem(personality, emotion, mems ?? []);
+    const system = `${tunedSystem(personality, emotion, mems ?? [])}\n\nCURRENT MODE: ${mode.toUpperCase()}.`;
 
     // persist user message
     if (convId && lastUser) {
