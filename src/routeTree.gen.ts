@@ -9,11 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SystempulseRouteImport } from './routes/systempulse'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as GodmodeRouteImport } from './routes/godmode'
+import { Route as GhostvisionRouteImport } from './routes/ghostvision'
 import { Route as GhostadminRouteImport } from './routes/ghostadmin'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SystempulseRoute = SystempulseRouteImport.update({
+  id: '/systempulse',
+  path: '/systempulse',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -22,6 +29,11 @@ const LoginRoute = LoginRouteImport.update({
 const GodmodeRoute = GodmodeRouteImport.update({
   id: '/godmode',
   path: '/godmode',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GhostvisionRoute = GhostvisionRouteImport.update({
+  id: '/ghostvision',
+  path: '/ghostvision',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GhostadminRoute = GhostadminRouteImport.update({
@@ -38,39 +50,73 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ghostadmin': typeof GhostadminRoute
+  '/ghostvision': typeof GhostvisionRoute
   '/godmode': typeof GodmodeRoute
   '/login': typeof LoginRoute
+  '/systempulse': typeof SystempulseRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ghostadmin': typeof GhostadminRoute
+  '/ghostvision': typeof GhostvisionRoute
   '/godmode': typeof GodmodeRoute
   '/login': typeof LoginRoute
+  '/systempulse': typeof SystempulseRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/ghostadmin': typeof GhostadminRoute
+  '/ghostvision': typeof GhostvisionRoute
   '/godmode': typeof GodmodeRoute
   '/login': typeof LoginRoute
+  '/systempulse': typeof SystempulseRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/ghostadmin' | '/godmode' | '/login'
+  fullPaths:
+    | '/'
+    | '/ghostadmin'
+    | '/ghostvision'
+    | '/godmode'
+    | '/login'
+    | '/systempulse'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/ghostadmin' | '/godmode' | '/login'
-  id: '__root__' | '/' | '/ghostadmin' | '/godmode' | '/login'
+  to:
+    | '/'
+    | '/ghostadmin'
+    | '/ghostvision'
+    | '/godmode'
+    | '/login'
+    | '/systempulse'
+  id:
+    | '__root__'
+    | '/'
+    | '/ghostadmin'
+    | '/ghostvision'
+    | '/godmode'
+    | '/login'
+    | '/systempulse'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GhostadminRoute: typeof GhostadminRoute
+  GhostvisionRoute: typeof GhostvisionRoute
   GodmodeRoute: typeof GodmodeRoute
   LoginRoute: typeof LoginRoute
+  SystempulseRoute: typeof SystempulseRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/systempulse': {
+      id: '/systempulse'
+      path: '/systempulse'
+      fullPath: '/systempulse'
+      preLoaderRoute: typeof SystempulseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -83,6 +129,13 @@ declare module '@tanstack/react-router' {
       path: '/godmode'
       fullPath: '/godmode'
       preLoaderRoute: typeof GodmodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ghostvision': {
+      id: '/ghostvision'
+      path: '/ghostvision'
+      fullPath: '/ghostvision'
+      preLoaderRoute: typeof GhostvisionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ghostadmin': {
@@ -105,8 +158,10 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GhostadminRoute: GhostadminRoute,
+  GhostvisionRoute: GhostvisionRoute,
   GodmodeRoute: GodmodeRoute,
   LoginRoute: LoginRoute,
+  SystempulseRoute: SystempulseRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
