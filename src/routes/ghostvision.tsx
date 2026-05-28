@@ -74,7 +74,7 @@ function GhostVision() {
               Live snapshot of what every awakened mind has been feeling in the last hour.
             </p>
           </div>
-          <ReactiveOrb state="dreaming" size={120} />
+          <ReactiveOrb state="thinking" size={120} />
         </div>
 
         <section className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4">
