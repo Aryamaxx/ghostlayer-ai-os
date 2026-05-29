@@ -13,7 +13,9 @@ import { Route as SystempulseRouteImport } from './routes/systempulse'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as GodmodeRouteImport } from './routes/godmode'
 import { Route as GhostvisionRouteImport } from './routes/ghostvision'
+import { Route as GhostmodeRouteImport } from './routes/ghostmode'
 import { Route as GhostadminRouteImport } from './routes/ghostadmin'
+import { Route as CinematicmodeRouteImport } from './routes/cinematicmode'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SystempulseRoute = SystempulseRouteImport.update({
@@ -36,9 +38,19 @@ const GhostvisionRoute = GhostvisionRouteImport.update({
   path: '/ghostvision',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GhostmodeRoute = GhostmodeRouteImport.update({
+  id: '/ghostmode',
+  path: '/ghostmode',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GhostadminRoute = GhostadminRouteImport.update({
   id: '/ghostadmin',
   path: '/ghostadmin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CinematicmodeRoute = CinematicmodeRouteImport.update({
+  id: '/cinematicmode',
+  path: '/cinematicmode',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -49,7 +61,9 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/cinematicmode': typeof CinematicmodeRoute
   '/ghostadmin': typeof GhostadminRoute
+  '/ghostmode': typeof GhostmodeRoute
   '/ghostvision': typeof GhostvisionRoute
   '/godmode': typeof GodmodeRoute
   '/login': typeof LoginRoute
@@ -57,7 +71,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cinematicmode': typeof CinematicmodeRoute
   '/ghostadmin': typeof GhostadminRoute
+  '/ghostmode': typeof GhostmodeRoute
   '/ghostvision': typeof GhostvisionRoute
   '/godmode': typeof GodmodeRoute
   '/login': typeof LoginRoute
@@ -66,7 +82,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/cinematicmode': typeof CinematicmodeRoute
   '/ghostadmin': typeof GhostadminRoute
+  '/ghostmode': typeof GhostmodeRoute
   '/ghostvision': typeof GhostvisionRoute
   '/godmode': typeof GodmodeRoute
   '/login': typeof LoginRoute
@@ -76,7 +94,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/cinematicmode'
     | '/ghostadmin'
+    | '/ghostmode'
     | '/ghostvision'
     | '/godmode'
     | '/login'
@@ -84,7 +104,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/cinematicmode'
     | '/ghostadmin'
+    | '/ghostmode'
     | '/ghostvision'
     | '/godmode'
     | '/login'
@@ -92,7 +114,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/cinematicmode'
     | '/ghostadmin'
+    | '/ghostmode'
     | '/ghostvision'
     | '/godmode'
     | '/login'
@@ -101,7 +125,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CinematicmodeRoute: typeof CinematicmodeRoute
   GhostadminRoute: typeof GhostadminRoute
+  GhostmodeRoute: typeof GhostmodeRoute
   GhostvisionRoute: typeof GhostvisionRoute
   GodmodeRoute: typeof GodmodeRoute
   LoginRoute: typeof LoginRoute
@@ -138,11 +164,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GhostvisionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ghostmode': {
+      id: '/ghostmode'
+      path: '/ghostmode'
+      fullPath: '/ghostmode'
+      preLoaderRoute: typeof GhostmodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/ghostadmin': {
       id: '/ghostadmin'
       path: '/ghostadmin'
       fullPath: '/ghostadmin'
       preLoaderRoute: typeof GhostadminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cinematicmode': {
+      id: '/cinematicmode'
+      path: '/cinematicmode'
+      fullPath: '/cinematicmode'
+      preLoaderRoute: typeof CinematicmodeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -157,7 +197,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CinematicmodeRoute: CinematicmodeRoute,
   GhostadminRoute: GhostadminRoute,
+  GhostmodeRoute: GhostmodeRoute,
   GhostvisionRoute: GhostvisionRoute,
   GodmodeRoute: GodmodeRoute,
   LoginRoute: LoginRoute,
@@ -166,3 +208,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
