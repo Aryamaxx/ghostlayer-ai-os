@@ -41,6 +41,7 @@ export function Nav() {
             <li><Link to="/ghostadmin" className="text-[var(--neon)] hover:text-foreground transition font-mono text-xs tracking-widest">ROOT</Link></li>
             <li><Link to="/ghostvision" className="text-[var(--violet)] hover:text-foreground transition font-mono text-xs tracking-widest">VISION</Link></li>
             <li><Link to="/systempulse" className="text-[var(--violet)] hover:text-foreground transition font-mono text-xs tracking-widest">PULSE</Link></li>
+            <li><Link to="/ghostmode" className="text-[var(--violet)] hover:text-foreground transition font-mono text-xs tracking-widest">CINEMATIC</Link></li>
           </>}
         </ul>
         {email ? (

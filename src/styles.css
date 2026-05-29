@@ -174,3 +174,12 @@
     animation: fade-in 180ms ease-out forwards;
   }
 }
+
+@layer utilities {
+  /* Founder cinematic mode — deeper, more immersive ambient field */
+  .cinematic-veil {
+    background-image:
+      radial-gradient(ellipse 90% 60% at 50% -10%, oklch(0.65 0.24 295 / 0.30), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 30%, oklch(0.55 0.22 280 / 0.22), transparent 60%);
+  }
+}
